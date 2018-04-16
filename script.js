@@ -56,10 +56,9 @@ function createGeometry(a, b, c, d) {
     var rhsValue = - G * Math.pow(delta, 2) / K;
 
     for (let i = 1; i < N; i++) {
-        var coef = (p * delta / 2.0) / (R_a + delta * i);
         a[i - 1] = 1 - (p * delta / 2.0) / (R_a + delta * i);
         b[i] = - 2.0;
-        c[i] = 1 + coef;
+        c[i] = 1 + (p * delta / 2.0) / (R_a + delta * i);
         d[i] = rhsValue;
     }
 
@@ -108,21 +107,13 @@ function calculateStreamInterior(T, K, delta) {
         600.0*T[2] + 400.0*T[3] - 150.0*T[4] + 24.0*T[5]) / (120.0*delta);
 }
 
-function calculateStreamExternal() {
+function calculateStreamExternal(T, K, delta) {
     // 3 points: m = 2.0, j = 2; A0 = 1, A1 = -4, A2 = 3
     // return streamExternal = K*(1.0*T[N-2] - 4.0*T[N-1] + 3.0*T[N]) / (2.0*delta);
 
     // 6 points: ...
-    return streamExternal = K*(-24.0*T[N - 5] + 150.0*T[N - 4] -
-        400.0*T[N - 3] + 600.0*T[N-2]-600.0*T[N-1]+274.0*T[N]) / (120.0*delta);
-}
-
-// matrix-like arrays used in google charts
-function matrixArray(rows, columns) {
-    var arr = new Array();
-    for(var i = 0; i < rows; i++)
-        arr[i] = new Array();
-    return arr;
+    return streamExternal = K*(-24.0*T[N-5] + 150.0*T[N-4] -
+        400.0*T[N-3] + 600.0*T[N-2]-600.0*T[N-1]+274.0*T[N]) / (120.0*delta);
 }
 
 // object info's dump for debug (similar to PHP) 
@@ -143,6 +134,14 @@ function outputStreamDOM(stream, title) {
     var streamInteriorDOM = document.createElement('h2');
     streamInteriorDOM.innerHTML = outputString + '<br />';
     document.body.appendChild(streamInteriorDOM);
+}
+
+// matrix-like arrays used in google charts
+function matrixArray(rows, columns) {
+    var arr = new Array();
+    for(var i = 0; i < rows; i++)
+        arr[i] = new Array();
+    return arr;
 }
 
 
@@ -179,7 +178,7 @@ google.charts.setOnLoadCallback(drawBackgroundColor);
 function drawBackgroundColor() {
     var data = new google.visualization.DataTable();
     data.addColumn('number', 'X');
-    data.addColumn('number', '1');
+    data.addColumn('number', 'T ( r )');
 
     for(let i = 0; i < N + 1; i++)
         data.addRows([ [resultX[0][i],  resultY[0][i]] ]);
